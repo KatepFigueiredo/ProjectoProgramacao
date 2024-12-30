@@ -2,33 +2,27 @@ package utilizadores;
 
 import java.util.Objects;
 
-public class utilizadores {
+public class Utilizador {
 	private String username;
 	private String password;
 	private String nome;
 	private boolean estado_ativo;
 	private String email;
 	private String tipo;
-	private String nif;
-	private String morada;
-	private String telefone;
 	
 //construtor
 	
-	public utilizadores(String username,String password, String nome, String email, String tipo, String nif, String morada, String telefone) {
+	public Utilizador(String username,String password, String nome, String email, String tipo) {
 		this.username = username;
-		this.password =password;
+		this.password = password;
 		this.nome = nome;
 		this.estado_ativo = true; //verificar
 		this.email = email;
 		this.tipo = tipo;
-		this.nif = nif;
-		this.morada = morada;
-		this.telefone = telefone;
 		
 	}
 	
-//gets
+//getters
 	
 	public String getUsername() {
 		return username;
@@ -48,26 +42,23 @@ public class utilizadores {
 	public String getTipo() {
 		return tipo;
 	}
-	public String getNif() {
-		return nif;
-	}
-	public String getmorada() {
-		return morada;
-	}
-	public String getTelefone() {
-		return telefone;
-	}
-	//sets
+	
+	
+	//setters
 	public String setEmail() {
 		return email;
 	}
-	public String setNif() {
-		return nif;
+	
+	
+	
+	//Método para só atualizar a própria informação
+	public boolean atualizarInformacao(String password, String nome, String email) {
+		
+		this.password = password;
+		this.nome = nome;
+		this.email = email;
+		return true;
+		
 	}
-	public String setmorada() {
-		return morada;
-	}
-	public String setTelefone() {
-		return telefone;
-	}
+	
 }
