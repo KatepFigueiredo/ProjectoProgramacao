@@ -1,7 +1,6 @@
+package loja;
 import funcoes.GestaoUtilizadores;
-import utilizadores.Administrador;
-import utilizadores.Cliente;
-import utilizadores.Tecnico;
+import utilizadores.Utilizador;
 
 import java.util.Scanner;
 
@@ -35,9 +34,6 @@ public class Main {
         gestaoUtilizadores.guardarDados();
     }
 
-    /**
-     * Mostra o menu inicial ao utilizador.
-     */
     private static void mostrarMenu() {
         System.out.println("\nMenu Inicial:");
         System.out.println("1 - Registar");
@@ -45,43 +41,23 @@ public class Main {
         System.out.println("3 - Sair");
     }
 
-    /**
-     * Lê e retorna a opção escolhida pelo utilizador.
-     *
-     * @param mensagem Mensagem a ser exibida ao utilizador.
-     * @return O número da opção escolhida.
-     */
     private static int lerOpcao(String mensagem) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(mensagem);
 
-        // Garantir que o input é um número inteiro
         while (!scanner.hasNextInt()) {
             System.out.println("Erro: Introduza um número válido.");
-            scanner.next(); // Ignorar entrada inválida
+            scanner.next();
         }
         return scanner.nextInt();
     }
 
-    /**
-     * Pergunta ao utilizador se deseja continuar e retorna a resposta.
-     *
-     * @param mensagem Mensagem a ser exibida ao utilizador.
-     * @return true se o utilizador desejar continuar, false caso contrário.
-     */
     private static boolean continuar(String mensagem) {
         Scanner scanner = new Scanner(System.in);
         System.out.println(mensagem);
-
-        // Verificar se a resposta é "s" ou "n" (case-insensitive)
         return scanner.nextLine().equalsIgnoreCase("s");
     }
 
-    /**
-     * Executa a ação correspondente à opção escolhida pelo utilizador.
-     *
-     * @param opcao A opção escolhida.
-     */
     private static void executarOpcao(int opcao) {
         switch (opcao) {
             case 1:
@@ -98,9 +74,6 @@ public class Main {
         }
     }
 
-    /**
-     * Opção 1: Registar um novo utilizador.
-     */
     private static void opcaoRegistar() {
         Scanner scanner = new Scanner(System.in);
 
@@ -112,7 +85,6 @@ public class Main {
 
         int tipo = lerOpcao("Escolha o tipo de utilizador:");
 
-        // Coletar dados básicos
         System.out.print("Introduza o username: ");
         String username = scanner.nextLine();
 
@@ -127,10 +99,7 @@ public class Main {
 
         boolean estado = continuar("O utilizador está ativo? [S/N]");
 
-        // Dados específicos para Técnico e Cliente
-        String nif = null;
-        String morada = null;
-        String contacto = null;
+        String nif = null, morada = null, contacto = null;
 
         if (tipo == 2 || tipo == 3) {
             System.out.print("Introduza o NIF: ");
@@ -143,51 +112,45 @@ public class Main {
             contacto = scanner.nextLine();
         }
 
-        // Criar o utilizador e adicionar à lista
-        switch (tipo) {
-            case 1:
-                Administrador admin = new Administrador(username, password, nome, estado, email);
-                if (gestaoUtilizadores.adicionarUtilizador(admin)) {
-                    System.out.println("Administrador registado com sucesso!");
-                }
-                break;
-            case 2:
-                Tecnico tecnico = new Tecnico(username, password, nome, estado, email, nif, morada, contacto);
-                if (gestaoUtilizadores.adicionarUtilizador(tecnico)) {
-                    System.out.println("Técnico registado com sucesso!");
-                }
-                break;
-            case 3:
-                Cliente cliente = new Cliente(username, password, nome, estado, email, nif, morada, contacto);
-                if (gestaoUtilizadores.adicionarUtilizador(cliente)) {
-                    System.out.println("Cliente registado com sucesso!");
-                }
-                break;
-            default:
-                System.out.println("Opção inválida! Tipo de utilizador desconhecido.");
+        Utilizador novoUtilizador = switch (tipo) {
+            case 1 -> new Utilizador(username, password, nome, estado, email, "Administrador");
+            case 2 -> new Utilizador(username, password, nome, estado, email, "Tecnico");
+            case 3 -> new Utilizador(username, password, nome, estado, email, "Cliente");
+            default -> null;
+        };
+
+        if (novoUtilizador != null && gestaoUtilizadores.adicionarUtilizador(novoUtilizador)) {
+            System.out.println("Utilizador registado com sucesso!");
+        } else {
+            System.out.println("Erro ao registar o utilizador.");
         }
     }
 
-    /**
-     * Opção 2: Autenticar um utilizador.
-     */
     private static void opcaoAutenticar() {
+        Scanner scanner = new Scanner(System.in);
+
         System.out.println("\n=== Autenticação de Utilizador ===");
-        // Lógica de autenticação será implementada aqui
-        // Verificar credenciais no ficheiro credenciais_acesso.txt
+        System.out.print("Digite o username: ");
+        String username = scanner.nextLine();
+
+        System.out.print("Digite a password: ");
+        String password = scanner.nextLine();
+
+        Utilizador utilizador = gestaoUtilizadores.autenticarUtilizador(username, password);
+
+        if (utilizador != null) {
+            System.out.println("Bem-vindo, " + utilizador.getNome() + "!");
+            System.out.println("Abrindo menu para " + utilizador.getTipo() + "...");
+        } else {
+            System.out.println("Credenciais inválidas. Tente novamente.");
+        }
     }
 
-    /**
-     * Opção 3: Encerrar a aplicação.
-     */
     private static void opcaoSair() {
         System.out.println("A encerrar aplicação. Adeus.");
-        System.exit(0); // Finaliza o programa
+        System.exit(0);
     }
 
-    /**
-     * Exibe uma mensagem de erro para opções inválidas.
-     */
     private static void mostrarErro() {
         System.out.println("Opção inválida! Por favor, escolha uma das opções disponíveis.");
     }
